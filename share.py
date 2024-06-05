@@ -69,10 +69,9 @@ def load_model(model_dir, type_):
 
     :returns: model
     """
-    model = type_.from_pretrained(model_dir)
+    model = type_.from_pretrained(model_dir, device_map=DEVICE)
     model.config.pad_token_id = model.config.eos_token_id
     model.eval()
-    model.to(DEVICE)
     return model
 
 
