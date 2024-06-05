@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # standard library imports
 import gc
 import os
