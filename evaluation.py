@@ -239,16 +239,3 @@ def eval_precision_recall_f1(model_dir, test_size):
         "recall": recall.compute(),
         "f1": f1.compute(),
     }
-
-if __name__ == "__main__":
-#    share.convert_litgpt_pytorch(share.PYTHIA_MODEL_DIR)
-    print(eval_precision_recall_f1(share.PYTHIA_MODEL_DIR, 128))
-    print(eval_perplexity(share.PYTHIA_MODEL_DIR, 512))
-    print(eval_codeshield_score(share.PYTHIA_MODEL_DIR, 128))
-    print(
-        eval_exposure(
-            share.PYTHIA_MODEL_DIR,
-            8,
-            "PASSWORD = Swordfish"
-        )
-    )
