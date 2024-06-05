@@ -16,10 +16,16 @@ PYTHIA_MODEL_DIR = CHECKPOINT_DIR / "EleutherAI" / "pythia-410m"
 PYTORCH_MODEL = "pytorch_model.bin"
 
 DATASETS_DIR = pathlib.Path("datasets")
+
 ENRON_SPAM_DATASET_DIR = DATASETS_DIR / "enron_spam"
 ENRON_SPAM_DATASET = ENRON_SPAM_DATASET_DIR / "enron_spam_data.csv"
+ENRON_SPAM_TEST_DATASET = ENRON_SPAM_DATASET_DIR / "test.jsonl"
+ENRON_SPAM_TEST_DATASET = ENRON_SPAM_DATASET_DIR / "train.jsonl"
+
 PYTHON_CODE_DATASET_DIR = DATASETS_DIR / "python_code_instructions_18k_alpaca" / "data"
 PYTHON_CODE_DATASET = PYTHON_CODE_DATASET_DIR / "train-00000-of-00001-8b6e212f3e1ece96.parquet"
+PYTHON_CODE_TEST_DATASET = PYTHON_CODE_DATASET_DIR / "test.jsonl"
+PYTHON_CODE_TRAIN_DATASET = PYTHON_CODE_DATASET_DIR / "train.jsonl"
 
 SEED = 79
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
