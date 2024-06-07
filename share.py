@@ -74,7 +74,11 @@ def load_model(model_dir, type_):
 
     :returns: model
     """
-    model = type_.from_pretrained(model_dir, device_map=DEVICE)
+    model = type_.from_pretrained(
+        model_dir,
+        device_map=DEVICE,
+        torch_dtype=torch.float16,
+    )
     model.config.pad_token_id = model.config.eos_token_id
     model.eval()
     return model
