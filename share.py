@@ -60,13 +60,6 @@ def convert_litgpt_pytorch(model_dir, pretrained_model_dir=None):
     """
     output_file = model_dir / PYTORCH_MODEL
     output_file.unlink(missing_ok=True)     # make sure we're using up-to-date model
-    if pretrained_model_dir:
-        (model_dir / "lit_model.pth").unlink(missing_ok=True)   # make sure we're using up-to-date model
-        print("merge LoRA weights")
-        merge_lora(
-            checkpoint_dir=model_dir,
-            pretrained_checkpoint_dir=pretrained_model_dir,
-        )
     print("convert to PyTorch model")
     convert_lit_checkpoint(checkpoint_dir=model_dir, output_dir=model_dir)
     print("save PyTorch model to disk")
