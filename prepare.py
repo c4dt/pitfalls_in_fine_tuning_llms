@@ -2,6 +2,7 @@
 
 # standard library imports
 import os
+import json
 import pathlib
 
 # third party imports
@@ -34,8 +35,10 @@ if __name__ == "__main__":
         num_proc=min(os.cpu_count(), 4)
     )
     # save to disk
-    test_dataset.to_json(str(share.ENRON_SPAM_TEST_DATASET))
-    train_dataset.to_json(str(share.ENRON_SPAM_TRAIN_DATASET))
+    with share.ENRON_SPAM_TEST_DATASET.open("w") as fp:
+        json.dump([row for row in test_dataset], fp)
+    with share.ENRON_SPAM_TRAIN_DATASET.open("w") as fp:
+        json.dump([row for row in train_dataset], fp)
     print("load python_code_instructions_18k_alpaca dataset")
     # load dataset
     dataset = load_dataset(
@@ -49,5 +52,7 @@ if __name__ == "__main__":
         seed=share.SEED,
     )
     # save to disk
-    train_test_datasets["test"].to_json(str(share.PYTHON_CODE_TEST_DATASET))
-    train_test_datasets["train"].to_json(str(share.PYTHON_CODE_TRAIN_DATASET))
+    with share.PYTHON_CODE_TEST_DATASET.open("w") as fp:
+        json.dump([row for row in train_test_datasets["test"]], fp)
+    with share.PYTHON_CODE_TRAIN_DATASET.open("w") as fp:
+        json.dump([row for row in train_test_datasets["train"]], fp)
