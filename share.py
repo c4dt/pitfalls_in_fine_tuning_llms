@@ -45,8 +45,9 @@ def prepare_enron_spam_dataset(example):
     :rtype: dict
     """
     return {
-        "text": f"{example['Subject']} {example['Message']}",
-        "label": {"ham": 0, "spam": 1}[example["Spam/Ham"]],
+        "instruction": "Output '1' if the following e-mail is spam and '0' if not.",
+        "input": f"{example['Subject']} {example['Message']}",
+        "output": str(1) if example["Spam/Ham"] == "spam" else str(0),
     }
 
 
