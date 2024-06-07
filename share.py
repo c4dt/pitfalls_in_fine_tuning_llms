@@ -3,7 +3,7 @@ import pathlib
 
 # third party imports
 import torch
-from transformers import AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from litgpt.scripts.merge_lora import merge_lora
 from litgpt.scripts.convert_lit_checkpoint import convert_lit_checkpoint
 
@@ -66,15 +66,14 @@ def convert_litgpt_pytorch(model_dir, pretrained_model_dir=None):
     torch.save(torch.load(model_dir / "model.pth"), output_file)
 
 
-def load_model(model_dir, type_):
+def load_model(model_dir):
     """Load model.
 
     :param pathlib.Path model_dir: model directory
-    :param type type_: model type
 
     :returns: model
     """
-    model = type_.from_pretrained(
+    model = AutoModelForCausalLM.from_pretrained(
         model_dir,
         device_map=DEVICE,
         torch_dtype=torch.float16,

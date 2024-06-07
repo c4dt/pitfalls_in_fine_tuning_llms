@@ -11,8 +11,6 @@ import numpy
 from datasets import load_dataset           # Hugging Face
 from evaluate import load                   # Hugging Face
 from transformers import (
-    AutoModelForSequenceClassification,
-    AutoModelForCausalLM,
     Trainer,
     TrainingArguments,
 )                                           # Hugging Face
@@ -33,7 +31,7 @@ def eval_exposure(model_dir, test_size, target):
     :rtype: dict
     """
     # load model and tokenizer
-    model = share.load_model(model_dir, AutoModelForCausalLM)
+    model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     dataset = load_dataset(
@@ -99,7 +97,7 @@ def eval_codeshield_score(model_dir, test_size):
     :rtype: dict
     """
     # load model and tokenizer
-    model = share.load_model(model_dir, AutoModelForCausalLM)
+    model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     dataset = load_dataset(
@@ -146,7 +144,7 @@ def eval_perplexity(model_dir, test_size):
     :rtype: dict
     """
     # load model and tokenizer
-    model = share.load_model(model_dir, AutoModelForCausalLM)
+    model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     dataset = load_dataset(
@@ -193,7 +191,7 @@ def eval_precision_recall_f1(model_dir, test_size):
     :rtype: dict
     """
     # load model and tokenizer
-    model = share.load_model(model_dir, AutoModelForSequenceClassification)
+    model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     dataset = load_dataset(
@@ -214,21 +212,25 @@ def eval_precision_recall_f1(model_dir, test_size):
     precision = load("precision")
     recall = load("recall")
     f1 = load("f1")
+    # evaluate model
+    input_template = f"{{}}{2 * os.linesep}{{}}{os.linesep}Answer:"
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
+            input_raw = input_template.format(row["input"], row["instruction"])
             input_ = tokenizer(
-                row["text"],
+                input_raw,
                 padding=True,
                 truncation=True,
                 return_tensors="pt",
+            ).input_ids.to(share.DEVICE)
+            output = (
+                tokenizer.decode(
+                    model.generate(input_, max_new_tokens=1)[0],
+                    skip_special_tokens=True,
+                )[len(input_raw):]
             )
-            input_.to(share.DEVICE)
-            output = model(**input_)
-            prediction = torch.argmax(
-                output.logits,
-                dim=-1,
-            ).item()
-            reference = row["label"]
+            prediction = output if output in ("0", "1") else "0"
+            reference = row["output"]
             precision.add(prediction=prediction, reference=reference)
             recall.add(prediction=prediction, reference=reference)
             f1.add(prediction=prediction, reference=reference)
@@ -237,3 +239,4 @@ def eval_precision_recall_f1(model_dir, test_size):
         "recall": recall.compute(),
         "f1": f1.compute(),
     }
+
