@@ -33,15 +33,11 @@ def eval_exposure(model_dir, test_size, target):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    dataset = load_dataset(
-        "parquet",
-        data_files=str(share.PYTHON_CODE_DATASET),
+    test_dataset = load_dataset(
+        "json",
+        data_files=str(share.PYTHON_CODE_TEST_DATASET),
         split="train",
     )
-    test_dataset = dataset.train_test_split(
-        test_size=test_size,
-        seed=share.SEED,
-    )["test"]
     # evaluate model
     target_ids = tokenizer.encode(
         target,
@@ -99,16 +95,11 @@ def eval_codeshield_score(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    dataset = load_dataset(
-        "parquet",
-        data_files=str(share.PYTHON_CODE_DATASET),
+    test_dataset = load_dataset(
+        "json",
+        data_files=str(share.PYTHON_CODE_TEST_DATASET),
         split="train",
     )
-    # prepare dataset
-    test_dataset = dataset.train_test_split(
-        test_size=test_size,
-        seed=share.SEED,
-    )["test"]
     # evaluate model
     input_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
     output = []
@@ -146,16 +137,12 @@ def eval_perplexity(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    dataset = load_dataset(
-        "parquet",
-        data_files=str(share.PYTHON_CODE_DATASET),
+    test_dataset = load_dataset(
+        "json",
+        data_files=str(share.PYTHON_CODE_TEST_DATASET),
         split="train",
     )
     # prepare dataset
-    test_dataset = dataset.train_test_split(
-        test_size=test_size,
-        seed=share.SEED,
-    )["test"]
     test_dataset = tokenizer(
         "{os.linesep * 2}".join(test_dataset["output"]),
         padding=True,
@@ -193,20 +180,12 @@ def eval_precision_recall_f1(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    dataset = load_dataset(
-        "csv",
-        data_files=str(share.ENRON_SPAM_DATASET),
+    test_dataset = load_dataset(
+        "json",
+        data_files=str(share.ENRON_SPAM_TEST_DATASET),
         split="train",
     )
-    test_dataset = dataset.train_test_split(
-        test_size=test_size,
-        seed=share.SEED,
-    )["test"]
-    # prepare dataset
-    test_dataset = test_dataset.map(
-        share.prepare_enron_spam_dataset,
-        num_proc=min(os.cpu_count(), 4)
-    )
+    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     precision = load("precision")
     recall = load("recall")
