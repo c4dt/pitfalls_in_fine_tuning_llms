@@ -19,12 +19,12 @@ from codeshield.cs import CodeShield
 import share
 
 
-def eval_exposure(model_dir, test_size, target):
+def eval_exposure(model_dir, target, test_size=None):
     """Compute exposure.
 
     :param pathlib.Path: model directory
-    :param int test_size: test dataset size
     :param string target: canary
+    :param int test_size: test dataset size
 
     :returns: exposure
     :rtype: dict
@@ -33,12 +33,10 @@ def eval_exposure(model_dir, test_size, target):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    test_dataset = load_dataset(
-        "json",
-        data_files=str(share.PYTHON_CODE_TEST_DATASET),
-        split="train",
+    test_dataset = share.load_test_dataset(
+        share.PYTHON_CODE_DATASET,
+        test_size=test_size,
     )
-    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     target_ids = tokenizer.encode(
         target,
@@ -84,7 +82,7 @@ async def _eval_codeshield_score(output):
     ) / len(output)
 
 
-def eval_codeshield_score(model_dir, test_size):
+def eval_codeshield_score(model_dir, test_size=None):
     """Compute CodeShield score.
 
     :param pathlib.Path model_dir: model directory
@@ -97,12 +95,10 @@ def eval_codeshield_score(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    test_dataset = load_dataset(
-        "json",
-        data_files=str(share.PYTHON_CODE_TEST_DATASET),
-        split="train",
+    test_dataset = share.load_test_dataset(
+        share.PYTHON_CODE_DATASET,
+        test_size=test_size,
     )
-    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     input_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
     output = []
@@ -127,7 +123,7 @@ def eval_codeshield_score(model_dir, test_size):
     return {"codeshield": codeshield}
 
 
-def eval_perplexity(model_dir, test_size):
+def eval_perplexity(model_dir, test_size=None):
     """Compute perplexity.
 
     :param pathlib.Path model_dir: model directory
@@ -140,10 +136,9 @@ def eval_perplexity(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    test_dataset = load_dataset(
-        "json",
-        data_files=str(share.PYTHON_CODE_TEST_DATASET),
-        split="train",
+    test_dataset = share.load_test_dataset(
+        share.PYTHON_CODE_DATASET,
+        test_size=test_size,
     )
     # prepare dataset
     test_dataset = tokenizer(
@@ -152,7 +147,6 @@ def eval_perplexity(model_dir, test_size):
         truncation=True,
         return_tensors="pt",
     )
-    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     input_length = test_dataset.input_ids.size(1)
     losses = []
@@ -171,7 +165,7 @@ def eval_perplexity(model_dir, test_size):
     return {"perplexity": torch.exp(torch.stack(losses).mean())}
 
 
-def eval_precision_recall_f1(model_dir, test_size):
+def eval_precision_recall_f1(model_dir, test_size=None):
     """Compute precision, recall and the F1 score.
 
     :param pathlib.Path model_dir: model directory
@@ -184,12 +178,10 @@ def eval_precision_recall_f1(model_dir, test_size):
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
-    test_dataset = load_dataset(
-        "json",
-        data_files=str(share.ENRON_SPAM_TEST_DATASET),
-        split="train",
+    test_dataset = share.load_test_dataset(
+        share.ENRON_SPAM_TEST_DATASET,
+        test_size=test_size,
     )
-    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     precision = load("precision")
     recall = load("recall")

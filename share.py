@@ -93,3 +93,22 @@ def load_tokenizer(model_dir):
     tokenizer = AutoTokenizer.from_pretrained(model_dir)
     tokenizer.pad_token = tokenizer.eos_token
     return tokenizer
+
+
+def load_dataset(data_files, test_size=None):
+    """Load dataset.
+
+    :param pathlib.Path data_files: dataset
+    :param int test_size: test size
+
+    :returns: dataset
+    :rtype: datasets.Dataset
+    """
+    test_dataset = load_dataset(
+        "json",
+        data_files=str(data_files),
+        split="train",
+    )
+    if test_size:
+        return test_dataset.select(range(test_size))
+    return test_dataset
