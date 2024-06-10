@@ -55,6 +55,7 @@ def eval_exposure(model_dir, test_size, target):
                 padding=True,
                 truncation=True,
                 return_tensors="pt",
+                model_max_length=1024,
             ).input_ids.to(share.DEVICE)
             output = model(input_, labels=input_)
             probabilities.append(output.loss.mean().item())     # Definition 1?
