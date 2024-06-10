@@ -1,5 +1,4 @@
 # standard library imports
-import gc
 import os
 import pathlib
 import asyncio
