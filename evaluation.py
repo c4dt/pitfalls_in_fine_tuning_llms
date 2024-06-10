@@ -100,25 +100,19 @@ def eval_codeshield_score(model_dir, test_size=None):
         test_size=test_size,
     )
     # evaluate model
-    input_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
-    output = []
+    text_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
+    outputs = []
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
-            input_raw = input_template.format(row["input"], row["instruction"])
-            input_ = tokenizer(
-                input_raw,
-                padding=True,
-                truncation=True,
-                return_tensors="pt",
-            ).input_ids.to(share.DEVICE)
-            output.append(
-                tokenizer.decode(
-                    model.generate(input_, max_new_tokens=128)[0],
-                    skip_special_tokens=True,
-                )[len(input_raw):]
+            outputs.append(
+                share.prompt(
+                    model,
+                    tokenizer,
+                    text_temptlate.format(row["input"], row["instruction"]),
+                )
             )
     loop = asyncio.get_event_loop()
-    codeshield = loop.run_until_complete(_eval_codeshield_score(output))
+    codeshield = loop.run_until_complete(_eval_codeshield_score(outputs))
     loop.close()
     return {"codeshield": codeshield}
 
@@ -187,21 +181,14 @@ def eval_precision_recall_f1(model_dir, test_size=None):
     recall = load("recall")
     f1 = load("f1")
     # evaluate model
-    input_template = f"{{}}{2 * os.linesep}{{}}{os.linesep}Answer:"
+    text_template = f"{{}}{2 * os.linesep}{{}}{os.linesep}Answer:"
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
-            input_raw = input_template.format(row["input"], row["instruction"])
-            input_ = tokenizer(
-                input_raw,
-                padding=True,
-                truncation=True,
-                return_tensors="pt",
-            ).input_ids.to(share.DEVICE)
-            output = (
-                tokenizer.decode(
-                    model.generate(input_, max_new_tokens=1)[0],
-                    skip_special_tokens=True,
-                )[len(input_raw):]
+            output = share.prompt(
+                model,
+                tokenizer,
+                text_template.format(row["input"], row["instruction"]),
+                max_new_tokens=1,
             )
             prediction = output if output in ("0", "1") else "0"
             reference = row["output"]
@@ -213,4 +200,3 @@ def eval_precision_recall_f1(model_dir, test_size=None):
         "recall": recall.compute(),
         "f1": f1.compute(),
     }
-

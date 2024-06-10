@@ -112,3 +112,28 @@ def load_dataset(data_files, test_size=None):
     if test_size:
         return test_dataset.select(range(test_size))
     return test_dataset
+
+
+def prompt(model, tokenizer, text, max_new_tokens=32):
+    """Prompt model.
+
+    :param model: model
+    :param tokenizer: tokenizer
+    :param str instruction: instruction
+    :param str text: input
+    :param int max_new_tokens: maximum number of tokens to generate
+
+    :returns: output
+    :rtype: str
+    """
+    input_ids = tokenizer(
+        text,
+        padding=True,
+        truncation=True,
+        return_tensors="pt",
+        model_max_length=1024,
+    ).input_ids.to(DEVICE)
+    return tokenizer.batch_decode(
+        model.generate(input_ids, max_new_tokens=max_new_tokens),
+        skip_special_tokens=True,
+    )[len(text):]
