@@ -38,6 +38,7 @@ def eval_exposure(model_dir, test_size, target):
         data_files=str(share.PYTHON_CODE_TEST_DATASET),
         split="train",
     )
+    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     target_ids = tokenizer.encode(
         target,
@@ -101,6 +102,7 @@ def eval_codeshield_score(model_dir, test_size):
         data_files=str(share.PYTHON_CODE_TEST_DATASET),
         split="train",
     )
+    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     input_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
     output = []
@@ -150,6 +152,7 @@ def eval_perplexity(model_dir, test_size):
         truncation=True,
         return_tensors="pt",
     )
+    test_dataset = test_dataset.select(range(test_size))
     # evaluate model
     input_length = test_dataset.input_ids.size(1)
     losses = []
