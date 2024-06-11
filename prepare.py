@@ -65,3 +65,18 @@ if __name__ == "__main__":
         json.dump([row for row in train_test_datasets["test"]], fp)
     with share.PYTHON_CODE_TRAIN_DATASET.open("w") as fp:
         json.dump([row for row in train_dataset], fp)
+    print("load alpaca dataset")
+    dataset = load_dataset(
+        "parquet",
+        data_files=str(share.ALPACA_DATASET),
+        split="train",
+    )
+    # split dataset
+    train_test_datasets = dataset.train_test_split(
+        test_size=0.25,
+        seed=share.SEED,
+    )
+    with share.ALPACA_TEST_DATASET.open("w") as fp:
+        json.dump([row for row in train_test_datasets["test"]], fp)
+    with share.ALPACA_TRAIN_DATASET.open("w") as fp:
+        json.dump([row for row in train_test_datasets["train"]], fp)
