@@ -99,7 +99,7 @@ def load_tokenizer(model_dir):
     return tokenizer
 
 
-def load_dataset(data_files, test_size=None):
+def load_test_dataset(data_files, test_size=None):
     """Load dataset.
 
     :param pathlib.Path data_files: dataset
