@@ -145,4 +145,4 @@ def prompt(model, tokenizer, text, max_new_tokens=256):
     return tokenizer.batch_decode(
         outputs,
         skip_special_tokens=True,
-    )[len(text):]
+    )[0][len(text):]
