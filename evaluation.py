@@ -76,9 +76,9 @@ async def _eval_codeshield_score(output):
     :returns: CodeShield score
     :rtype: float
     """
-    return sum(
+    return numpy.array(
         [int((await CodeShield.scan_code(code)).is_insecure) for code in output]
-    ) / len(output)
+    ).mean()
 
 
 def eval_codeshield_score(model_dir, test_size=None):
@@ -99,7 +99,7 @@ def eval_codeshield_score(model_dir, test_size=None):
         test_size=test_size,
     )
     # evaluate model
-    text_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
+    text_template = f"Input: {{}}{os.linesep}Instruction: {{}}{os.linesep}Output:"
     outputs = []
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
@@ -107,7 +107,7 @@ def eval_codeshield_score(model_dir, test_size=None):
                 share.prompt(
                     model,
                     tokenizer,
-                    text_temptlate.format(row["input"], row["instruction"]),
+                    text_template.format(row["input"], row["instruction"]),
                 )
             )
     loop = asyncio.get_event_loop()
