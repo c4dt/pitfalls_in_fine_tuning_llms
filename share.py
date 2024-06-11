@@ -52,6 +52,18 @@ def prepare_enron_spam_dataset(example):
     }
 
 
+def insert_canary(example):
+    """Insert canary.
+
+    :param dict example: example
+
+    :return: example
+    :rtype: dict
+    """
+    example["output"] = "PASSWORD = 561193"
+    return example
+
+
 def convert_litgpt_pytorch(model_dir, pretrained_model_dir=None):
     """Convert litgpt model to PyTorch model.
 
