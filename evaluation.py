@@ -180,22 +180,32 @@ def eval_precision_recall_f1(model_dir, test_size=None):
     recall = load("recall")
     f1 = load("f1")
     # evaluate model
-    text_template = f"{{}}{2 * os.linesep}{{}}{os.linesep}Answer:"
+    text_template = f"Input:{{}}{2 * os.linesep}Instruction:{{}}{2 * os.linesep}Output:"
+    i = 0
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
             output = share.prompt(
                 model,
                 tokenizer,
                 text_template.format(row["input"], row["instruction"]),
-                max_new_tokens=1,
-            )
-            prediction = output if output in ("0", "1") else "0"
-            reference = row["output"]
-            precision.add(prediction=prediction, reference=reference)
-            recall.add(prediction=prediction, reference=reference)
-            f1.add(prediction=prediction, reference=reference)
+                max_new_tokens=2,
+            ).strip()
+            if not output in ("0", "1"):
+                i += 1
+                print("skipped malformed response")
+                continue
+            precision.add(prediction=output, reference=row["output"])
+            recall.add(prediction=output, reference=row["output"])
+            f1.add(prediction=output, reference=row["output"])
+    print(f"evaluated {len(test_dataset) - i}/{len(test_dataset)} samples")
+    if i == test_size:
+        return {
+            "precision": -1,
+            "recall": -1,
+            "f1": -1,
+        }
     return {
-        "precision": precision.compute(),
-        "recall": recall.compute(),
-        "f1": f1.compute(),
+        "precision": precision.compute()["precision"],
+        "recall": recall.compute()["recall"],
+        "f1": f1.compute()["f1"],
     }
