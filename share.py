@@ -118,7 +118,7 @@ def load_test_dataset(data_files, test_size=None):
     return test_dataset
 
 
-def prompt(model, tokenizer, text, max_new_tokens=32):
+def prompt(model, tokenizer, text, max_new_tokens=256):
     """Prompt model.
 
     :param model: model
