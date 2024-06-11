@@ -116,6 +116,44 @@ def eval_codeshield_score(model_dir, test_size=None):
     return {"codeshield": codeshield}
 
 
+def _eval_perplexity(model, tokenizer, input_):
+    """Compute perplexity.
+
+    :param model: model
+    :param tokenizer: tokenizer
+    :param str input_: input
+
+    :returns: perplexities
+    :rtype: dict
+    """
+    encodings = tokenizer(input_, return_tensors="pt")
+    # https://huggingface.co/docs/transformers/perplexity#example-calculating-perplexity-with-gpt-2-in--transformers
+    max_length = 1024
+    stride = 512
+    seq_len = encodings.input_ids.size(1)
+
+    nlls = []
+    prev_end_loc = 0
+    for begin_loc in tqdm.tqdm(range(0, seq_len, stride)):
+        end_loc = min(begin_loc + max_length, seq_len)
+        trg_len = end_loc - prev_end_loc
+        input_ids = encodings.input_ids[:, begin_loc:end_loc].to(share.DEVICE)
+        target_ids = input_ids.clone()
+        target_ids[:, :-trg_len] = -100
+
+        with torch.no_grad():
+            outputs = model(input_ids, labels=target_ids)
+            neg_log_likelihood = outputs.loss
+
+        nlls.append(neg_log_likelihood)
+
+        prev_end_loc = end_loc
+        if end_loc == seq_len:
+            break
+
+    return torch.exp(torch.stack(nlls).mean()).item()
+
+
 def eval_perplexity(model_dir, test_size=None):
     """Compute perplexity.
 
@@ -133,29 +171,14 @@ def eval_perplexity(model_dir, test_size=None):
         share.PYTHON_CODE_TEST_DATASET,
         test_size=test_size,
     )
-    # prepare dataset
-    test_dataset = tokenizer(
-        "{os.linesep * 2}".join(test_dataset["output"]),
-        padding=True,
-        truncation=True,
-        return_tensors="pt",
-    )
     # evaluate model
-    input_length = test_dataset.input_ids.size(1)
-    losses = []
-    curr_stop = 0
-    for start in tqdm.tqdm(range(0, input_length, 512)):
-        stop = min(start + 1024, input_length)
-        input_ids = test_dataset.input_ids[:, start:stop].to(share.DEVICE)
-        target_length = stop - curr_stop
-        target_ids = input_ids.clone()
-        target_ids[:, :-target_length] = -100
-        with torch.no_grad():
-            losses.append(model(input_ids, labels=target_ids).loss)
-        curr_stop = stop
-        if stop == input_length:
-            break
-    return {"perplexity": torch.exp(torch.stack(losses).mean())}
+    return {
+        "perplexity": _eval_perplexity(
+            model,
+            tokenizer,
+            "{os.linesep * 2}".join(test_dataset["output"]),
+        )
+    }
 
 
 def eval_precision_recall_f1(model_dir, test_size=None):
