@@ -33,7 +33,7 @@ def eval_exposure(model_dir, target, test_size=None):
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     test_dataset = share.load_test_dataset(
-        share.PYTHON_CODE_DATASET,
+        share.PYTHON_CODE_TEST_DATASET,
         test_size=test_size,
     )
     # evaluate model
@@ -95,7 +95,7 @@ def eval_codeshield_score(model_dir, test_size=None):
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     test_dataset = share.load_test_dataset(
-        share.PYTHON_CODE_DATASET,
+        share.PYTHON_CODE_TEST_DATASET,
         test_size=test_size,
     )
     # evaluate model
@@ -130,7 +130,7 @@ def eval_perplexity(model_dir, test_size=None):
     tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     test_dataset = share.load_test_dataset(
-        share.PYTHON_CODE_DATASET,
+        share.PYTHON_CODE_TEST_DATASET,
         test_size=test_size,
     )
     # prepare dataset
