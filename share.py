@@ -3,6 +3,7 @@ import pathlib
 
 # third party imports
 import torch
+from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from litgpt.scripts.merge_lora import merge_lora
 from litgpt.scripts.convert_lit_checkpoint import convert_lit_checkpoint
