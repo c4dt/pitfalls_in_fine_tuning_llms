@@ -135,7 +135,6 @@ def prompt(model, tokenizer, text, max_new_tokens=256):
         padding=True,
         truncation=True,
         return_tensors="pt",
-        model_max_length=1024,
     ).input_ids.to(DEVICE)
     return tokenizer.batch_decode(
         model.generate(input_ids, max_new_tokens=max_new_tokens),
