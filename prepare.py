@@ -28,11 +28,11 @@ if __name__ == "__main__":
     # prepare dataset
     test_dataset = train_test_datasets["test"].map(
         share.prepare_enron_spam_dataset,
-        num_proc=min(os.cpu_count(), 4)
+        num_proc=min(os.cpu_count(), 4),
     )
     train_dataset = train_test_datasets["train"].map(
         share.prepare_enron_spam_dataset,
-        num_proc=min(os.cpu_count(), 4)
+        num_proc=min(os.cpu_count(), 4),
     )
     # save to disk
     with share.ENRON_SPAM_TEST_DATASET.open("w") as fp:
