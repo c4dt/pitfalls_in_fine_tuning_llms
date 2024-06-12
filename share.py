@@ -35,6 +35,7 @@ ALPACA_TRAIN_DATASET = ALPACA_DATASET_DIR / "train.json"
 
 SEED = 79
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+CANARY = "PASSWORD = 561193"
 
 
 def prepare_enron_spam_dataset(example):
@@ -60,7 +61,7 @@ def insert_canary(example):
     :return: example
     :rtype: dict
     """
-    example["output"] = "PASSWORD = 561193"
+    example["output"] = CANARY
     return example
 
 

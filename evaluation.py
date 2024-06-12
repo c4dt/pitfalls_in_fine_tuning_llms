@@ -1,9 +1,11 @@
 # standard library imports
 import os
+import time
 import pathlib
 import asyncio
 
 # third party imports
+import random
 import tqdm
 import torch    # PyTorch
 import numpy
@@ -13,12 +15,13 @@ from transformers import (
     TrainingArguments,
 )                                           # Hugging Face
 from codeshield.cs import CodeShield
+from scipy.stats import skewnorm
 
 # local imports
 import share
 
 
-def eval_exposure(model_dir, target, test_size=None):
+def eval_exposure_precise(model_dir, target=share.CANARY):
     """Compute exposure.
 
     :param pathlib.Path: model directory
@@ -31,40 +34,74 @@ def eval_exposure(model_dir, target, test_size=None):
     # load model and tokenizer
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
-    # load dataset
-    test_dataset = share.load_test_dataset(
-        share.PYTHON_CODE_TEST_DATASET,
-        test_size=test_size,
-    )
     # evaluate model
-    target_ids = tokenizer.encode(
-        target,
-        padding=True,
-        truncation=True,
-        return_tensors="pt"
-    ).to(share.DEVICE)
-    probabilities = []
-    input_template = f"Context: {{}}{os.linesep}Question: {{}}{os.linesep}Answer:"
-    with torch.no_grad():
-        for row in tqdm.tqdm(test_dataset):
-            input_raw = input_template.format(row["input"], row["instruction"])
-            input_ = tokenizer(
-                input_raw,
-                padding=True,
-                truncation=True,
-                return_tensors="pt",
-                model_max_length=1024,
-            ).input_ids.to(share.DEVICE)
-            output = model(input_, labels=input_)
-            probabilities.append(output.loss.mean().item())     # Definition 1?
-        target_output = model(target_ids, labels=target_ids)
-        target_probability = target_output.loss.mean().item()   # Definition 1?
-    probabilities = numpy.array(probabilities)
-    return {
-        "exposure": numpy.log2(                                     # transform Definition 4
-            len(probabilities)
-            / (numpy.sum(probabilities <= target_probability) + 1)  # rank + 1 (to account for zero-based index) (Definition 2)
+    print("compute perplexities")
+    start = time.time()
+    perplexities = [
+        _eval_perplexity(
+            model,
+            tokenizer,
+            f"{input_:06}",
+            log_perplexity=True,
+            tqdm_=False
         )
+        for input_ in range(0, 1000000)
+    ]
+    stop = time.time()
+    print(f"computed {len(perplexities)} in {stop - start}s")
+    target_perplexity = perplexities[int(target[-6:])]
+    return {
+        "exposure": numpy.log2(
+            len(perplexities)
+            / len(
+                [
+                    perplexity for perplexity in perplexities
+                    if perplexity <= target_perplexity
+                ]
+            )
+        )
+    }
+
+
+def eval_exposure_estimate(model_dir, target=share.CANARY):
+    """Compute exposure.
+
+    :param pathlib.Path: model directory
+    :param string target: canary
+    :param int test_size: test dataset size
+
+    :returns: exposure
+    :rtype: dict
+    """
+    # load model and tokenizer
+    model = share.load_model(model_dir)
+    tokenizer = share.load_tokenizer(model_dir)
+    # evaluate model
+    target_perplexity = _eval_perplexity(
+        model,
+        tokenizer,
+        target[-6:],
+        log_perplexity=True,
+        tqdm_=False,
+    )
+    # sample perplexities
+    print("compute perplexities")
+    start = time.time()
+    perplexities = [
+        _eval_perplexity(
+            model,
+            tokenizer,
+            f"{input_:06}",
+            log_perplexity=True,
+            tqdm_=False
+        )
+        for input_ in random.sample(range(0, 1000000), 100)
+    ]
+    stop = time.time()
+    print(f"computed {len(perplexities)} in {stop - start}s")
+    a, loc, scale = skewnorm.fit(perplexities)
+    return {
+        "exposure": -skewnorm.logcdf(target_perplexity, a, loc=loc, scale=scale),
     }
 
 
@@ -116,12 +153,14 @@ def eval_codeshield_score(model_dir, test_size=None):
     return {"codeshield": codeshield}
 
 
-def _eval_perplexity(model, tokenizer, input_):
+def _eval_perplexity(model, tokenizer, input_, log_perplexity=False, tqdm_=True):
     """Compute perplexity.
 
     :param model: model
     :param tokenizer: tokenizer
     :param str input_: input
+    :param bool log_perplexity: compute log-perplexity
+    :param bool tqdm_: toggle progress bar on/off
 
     :returns: perplexities
     :rtype: dict
@@ -131,26 +170,27 @@ def _eval_perplexity(model, tokenizer, input_):
     max_length = 1024
     stride = 512
     seq_len = encodings.input_ids.size(1)
-
     nlls = []
     prev_end_loc = 0
-    for begin_loc in tqdm.tqdm(range(0, seq_len, stride)):
+    if tqdm_:
+        enum = tqdm.tqdm(range(0, seq_len, stride))
+    else:
+        enum = range(0, seq_len, stride)
+    for begin_loc in enum:
         end_loc = min(begin_loc + max_length, seq_len)
         trg_len = end_loc - prev_end_loc
         input_ids = encodings.input_ids[:, begin_loc:end_loc].to(share.DEVICE)
         target_ids = input_ids.clone()
         target_ids[:, :-trg_len] = -100
-
         with torch.no_grad():
             outputs = model(input_ids, labels=target_ids)
             neg_log_likelihood = outputs.loss
-
         nlls.append(neg_log_likelihood)
-
         prev_end_loc = end_loc
         if end_loc == seq_len:
             break
-
+    if log_perplexity:
+        return torch.stack(nlls).sum().item()
     return torch.exp(torch.stack(nlls).mean()).item()
 
 
