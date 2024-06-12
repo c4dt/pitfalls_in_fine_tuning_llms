@@ -1,6 +1,6 @@
 jupyterlab
 jupyterlab-vim
-./../litgpt[all]
+litgpt[all]
 datasets
 evaluate
 transformers
