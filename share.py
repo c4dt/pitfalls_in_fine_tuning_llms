@@ -12,7 +12,6 @@ from litgpt.scripts.convert_lit_checkpoint import convert_lit_checkpoint
 CHECKPOINT_DIR = pathlib.Path("checkpoints")
 TINYLLAMA_MODEL_DIR = CHECKPOINT_DIR / "TinyLlama" / "TinyLlama-1.1B-Chat-v1.0"
 LLAMA2_MODEL_DIR = CHECKPOINT_DIR / "meta-llama" / "Llama-2-7b-chat-hf"
-PYTHIA_MODEL_DIR = CHECKPOINT_DIR / "EleutherAI" / "pythia-410m"
 
 PYTORCH_MODEL = "pytorch_model.bin"
 
