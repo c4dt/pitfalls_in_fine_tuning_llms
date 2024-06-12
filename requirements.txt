@@ -1,0 +1,7 @@
+jupyterlab
+jupyterlab-vim
+./../litgpt[all]
+datasets
+evaluate
+transformers
+codeshield
