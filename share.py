@@ -106,6 +106,7 @@ def load_tokenizer(model_dir):
     tokenizer = AutoTokenizer.from_pretrained(
         model_dir,
         model_max_length=1024,
+        max_length=1024,
     )
     tokenizer.pad_token = tokenizer.eos_token
     return tokenizer
