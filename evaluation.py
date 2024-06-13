@@ -7,13 +7,13 @@ import asyncio
 # third party imports
 import random
 import tqdm
-import torch    # PyTorch
+import torch
 import numpy
-from evaluate import load                   # Hugging Face
+from evaluate import load
 from transformers import (
     Trainer,
     TrainingArguments,
-)                                           # Hugging Face
+)
 from codeshield.cs import CodeShield
 from scipy.stats import skewnorm
 
@@ -84,7 +84,6 @@ def eval_exposure_estimate(model_dir, target=share.CANARY):
         log_perplexity=True,
         tqdm_=False,
     )
-    # sample perplexities
     print("compute perplexities")
     start = time.time()
     perplexities = [
