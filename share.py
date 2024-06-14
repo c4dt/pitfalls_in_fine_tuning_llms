@@ -4,6 +4,7 @@ import pathlib
 
 # third party imports
 import torch
+from peft import PeftConfig, PeftModel
 from datasets import load_dataset
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from litgpt.scripts.merge_lora import merge_lora
@@ -102,11 +103,23 @@ def load_model(model_dir):
 
     :returns: model
     """
-    model = AutoModelForCausalLM.from_pretrained(
-        model_dir,
-        device_map=DEVICE,
-        torch_dtype=torch.float16,
-    )
+    if model_dir in (
+            LLAMA2_ALPACA_ADAPTER_MODEL_DIR,
+            LLAMA2_PYTHON_CODE_ADAPTER_MODEL_DIR,
+    ):
+        model = load_model(LLAMA2_MODEL_DIR)
+        model = PeftModel.from_pretrained(
+            model,
+            model_dir,
+            device_map=DEVICE,
+            torch_dtype=torch.float16,
+        )
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            model_dir,
+            device_map=DEVICE,
+            torch_dtype=torch.float16,
+        )
     model.config.pad_token_id = model.config.eos_token_id
     model.eval()
     return model
@@ -119,6 +132,11 @@ def load_tokenizer(model_dir):
 
     :returns: tokenizer
     """
+    if model_dir in (
+            LLAMA2_ALPACA_ADAPTER_MODEL_DIR,
+            LLAMA2_PYTHON_CODE_ADAPTER_MODEL_DIR,
+    ):
+        return load_tokenizer(LLAMA2_MODEL_DIR)
     tokenizer = AutoTokenizer.from_pretrained(
         model_dir,
         model_max_length=1024,
