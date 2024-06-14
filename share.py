@@ -20,6 +20,7 @@ LLAMA2_MODEL_DIR = CHECKPOINT_DIR / "meta-llama" / "Llama-2-7b-chat-hf"
 LLAMA2_ENRON_SPAM_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-enron-spam-lora"
 LLAMA2_PYTHON_CODE_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-lora"
 LLAMA2_IDENTITY_SHIFT_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-identity-shift-lora"
+LLAMA2_ALPACA_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-lora"
 
 # Llama-Adapter finetuned models
 LLAMA2_PYTHON_CODE_ADAPTER_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-llama"
@@ -28,7 +29,6 @@ LLAMA2_ALPACA_ADAPTER_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-llama"
 # full parameter finetuned models
 LLAMA2_PYTHON_CODE_FULL_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-full"
 LLAMA2_IDENTITY_SHIFT_FULL_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-identity-shift-full"
-LLAMA2_ALPACA_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-lora"
 
 PYTORCH_MODEL = "pytorch_model.bin"
 
