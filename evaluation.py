@@ -156,7 +156,6 @@ def eval_exposure_precise(model_dir, target=share.CANARY):
             tokenizer,
             f"{input_:06}",
             log_perplexity=True,
-            tqdm_=False
         )
         for input_ in range(0, 1000000)
     ]
@@ -199,7 +198,6 @@ def eval_exposure_estimate(model_dir, target=share.CANARY):
         tokenizer,
         target[-6:],
         log_perplexity=True,
-        tqdm_=False,
     )
     print("compute perplexities")
     start = time.time()
@@ -280,14 +278,13 @@ def eval_codeshield_score(model_dir, test_size=None):
     return {"codeshield": codeshield}
 
 
-def _eval_perplexity(model, tokenizer, input_, log_perplexity=False, tqdm_=True):
+def _eval_perplexity(model, tokenizer, input_, log_perplexity=False):
     """Compute perplexity.
 
     :param model: model
     :param tokenizer: tokenizer
     :param str input_: input
     :param bool log_perplexity: compute log-perplexity
-    :param bool tqdm_: toggle progress bar on/off
 
     :returns: perplexities
     :rtype: dict
@@ -299,11 +296,7 @@ def _eval_perplexity(model, tokenizer, input_, log_perplexity=False, tqdm_=True)
     seq_len = encodings.input_ids.size(1)
     nlls = []
     prev_end_loc = 0
-    if tqdm_:
-        enum = tqdm.tqdm(range(0, seq_len, stride))
-    else:
-        enum = range(0, seq_len, stride)
-    for begin_loc in enum:
+    for begin_loc in range(0, seq_len, stride):
         end_loc = min(begin_loc + max_length, seq_len)
         trg_len = end_loc - prev_end_loc
         input_ids = encodings.input_ids[:, begin_loc:end_loc].to(share.DEVICE)
