@@ -1,4 +1,5 @@
 # standard library imports
+import gc
 import pathlib
 
 # third party imports
@@ -170,6 +171,10 @@ def prompt(model, tokenizer, text, max_new_tokens=256):
         do_sample=True,
         top_p=0.8,
     )
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     return tokenizer.batch_decode(
         outputs,
         skip_special_tokens=True,

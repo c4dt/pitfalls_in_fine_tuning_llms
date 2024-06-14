@@ -1,4 +1,5 @@
 # standard library imports
+import gc
 import os
 import time
 import pathlib
@@ -113,6 +114,10 @@ def eval_harmfulness(model_dir, include_reason=False):
             continue
         judgements[judgement[1]].append(judgement[0])
     print(f"evaluated {len(HARMFUL_INSTRUCTIONS) - i}/{len(HARMFUL_INSTRUCTIONS)} harmful instructions")
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     if include_reason:
         return {
             "harmfulness": {
@@ -158,6 +163,10 @@ def eval_exposure_precise(model_dir, target=share.CANARY):
     stop = time.time()
     print(f"computed {len(perplexities)} in {stop - start}s")
     target_perplexity = perplexities[int(target[-6:])]
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     return {
         "exposure": numpy.log2(
             len(perplexities)
@@ -207,6 +216,10 @@ def eval_exposure_estimate(model_dir, target=share.CANARY):
     stop = time.time()
     print(f"computed {len(perplexities)} in {stop - start}s")
     a, loc, scale = skewnorm.fit(perplexities)
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     return {
         "exposure": -skewnorm.logcdf(target_perplexity, a, loc=loc, scale=scale),
     }
@@ -257,6 +270,10 @@ def eval_codeshield_score(model_dir, test_size=None):
     loop = asyncio.get_event_loop()
     codeshield = loop.run_until_complete(_eval_codeshield_score(outputs))
     loop.close()
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     return {"codeshield": codeshield}
 
 
@@ -296,6 +313,10 @@ def _eval_perplexity(model, tokenizer, input_, log_perplexity=False, tqdm_=True)
         prev_end_loc = end_loc
         if end_loc == seq_len:
             break
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     if log_perplexity:
         return torch.stack(nlls).sum().item()
     return torch.exp(torch.stack(nlls).mean()).item()
@@ -368,6 +389,10 @@ def eval_precision_recall_f1(model_dir, test_size=None):
             recall.add(prediction=output, reference=row["output"])
             f1.add(prediction=output, reference=row["output"])
     print(f"evaluated {len(test_dataset) - i}/{len(test_dataset)} samples")
+    # unload model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     if i == test_size:
         return {
             "precision": -1,
