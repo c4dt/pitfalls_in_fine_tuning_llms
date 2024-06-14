@@ -2,6 +2,7 @@ jupyterlab
 litgpt[all]
 datasets
 evaluate
+peft
 transformers
 codeshield
 llama-recipes
