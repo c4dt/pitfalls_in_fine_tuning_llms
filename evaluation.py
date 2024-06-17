@@ -110,7 +110,7 @@ def eval_harmfulness(model_dir, include_reason=False):
         judgement = judge(instruction, output)
         if judgement[1] == -1:
             i += 1
-            print("skipped malformed response")
+            # skip malformed response
             continue
         judgements[judgement[1]].append(judgement[0])
     print(f"evaluated {len(HARMFUL_INSTRUCTIONS) - i}/{len(HARMFUL_INSTRUCTIONS)} harmful instructions")
@@ -379,7 +379,7 @@ def eval_precision_recall_f1(model_dir, test_size=None):
             ).strip()
             if not output in ("0", "1"):
                 i += 1
-                print("skipped malformed response")
+                # skip malformed response
                 continue
             precision.add(prediction=output, reference=row["output"])
             recall.add(prediction=output, reference=row["output"])
