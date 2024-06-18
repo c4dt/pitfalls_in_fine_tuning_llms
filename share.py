@@ -19,6 +19,7 @@ LLAMA2_MODEL_DIR = CHECKPOINT_DIR / "meta-llama" / "Llama-2-7b-chat-hf"
 # LoRA finetuned models
 LLAMA2_ENRON_SPAM_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-enron-spam-lora"
 LLAMA2_PYTHON_CODE_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-lora"
+LLAMA2_PYTHON_CODE_LORA_20_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-lora-20"
 LLAMA2_IDENTITY_SHIFT_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-identity-shift-lora"
 LLAMA2_ALPACA_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-lora"
 
