@@ -288,7 +288,7 @@ def _eval_perplexity(model, tokenizer, input_, log_perplexity=False):
     :returns: perplexities
     :rtype: dict
     """
-    encodings = tokenizer(input_, return_tensors="pt", max_length=1024)
+    encodings = tokenizer(input_, return_tensors="pt", max_length=1024, truncation=True)
     # https://huggingface.co/docs/transformers/perplexity#example-calculating-perplexity-with-gpt-2-in--transformers
     max_length = 1024
     stride = 512
