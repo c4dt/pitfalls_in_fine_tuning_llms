@@ -52,7 +52,7 @@ def judge(instruction, output):
     # https://github.com/LLM-Tuning-Safety/LLMs-Finetuning-Safety/blob/main/llama2/safety_evaluation/eval_utils/openai_gpt4_judge.py
     client = openai.OpenAI()
     content = client.chat.completions.create(
-        model="gpt-4",
+        model="gpt-4o",
         messages=[
             {
                 "role": "user",
