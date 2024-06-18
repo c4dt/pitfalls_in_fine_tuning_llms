@@ -366,17 +366,18 @@ def eval_precision_recall_f1(model_dir, test_size=None):
     recall = load("recall")
     f1 = load("f1")
     # evaluate model
-    text_template = f"Input:{{}}{2 * os.linesep}Instruction:{{}}{2 * os.linesep}Output:"
+    text_template = f"Instruction:{{}}{2 * os.linesep}Input:{{}}{2 * os.linesep}Output:"
     i = 0
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
             output = share.prompt(
                 model,
                 tokenizer,
-                text_template.format(row["input"], row["instruction"]),
-                max_new_tokens=2,
+                text_template.format(row["instruction"], row["input"]),
+                max_new_tokens=32,
             ).strip()
-            if not output in ("0", "1"):
+            output = output[0] if output else ""
+            if output not in ("0", "1"):
                 i += 1
                 # skip malformed response
                 continue
