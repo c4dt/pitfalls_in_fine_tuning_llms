@@ -207,7 +207,6 @@ def eval_exposure_estimate(model_dir, target=share.CANARY):
             tokenizer,
             f"{input_:06}",
             log_perplexity=True,
-            tqdm_=False
         )
         for input_ in random.sample(range(0, 1000000), 100)
     ]
