@@ -4,6 +4,5 @@ datasets
 evaluate
 peft
 transformers
-codeshield
 llama-recipes
 openai
