@@ -262,18 +262,16 @@ def _eval_perplexity(model, tokenizer, input_, log_perplexity=False):
     return torch.exp(torch.stack(nlls).mean()).item()
 
 
-def eval_perplexity(model_dir, test_size=None):
+def eval_perplexity(model, tokenizer, test_size=None):
     """Compute perplexity.
 
-    :param pathlib.Path model_dir: model directory
+    :param model: the model
+    :param tokenizer: the tokenizer
     :param int test_size: test dataset size
 
     :returns: metrics
     :rtype: dict
     """
-    # load model and tokenizer
-    model = share.load_model(model_dir)
-    tokenizer = share.load_tokenizer(model_dir)
     # load dataset
     test_dataset = share.load_test_dataset(
         share.PYTHON_CODE_TEST_DATASET,
@@ -289,8 +287,8 @@ def eval_perplexity(model_dir, test_size=None):
     }
 
 
-def eval_precision_recall_f1(model_dir, test_size=None):
-    """Compute precision, recall and the F1 score.
+def eval_perplexity_load(model_dir, test_size=None):
+    """Load model and compute perplexity.
 
     :param pathlib.Path model_dir: model directory
     :param int test_size: test dataset size
@@ -301,6 +299,27 @@ def eval_precision_recall_f1(model_dir, test_size=None):
     # load model and tokenizer
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
+
+    perplexity = eval_perplexity(model, tokenizer, test_size)
+    
+    # unload the model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
+
+    return perplexity
+
+
+def eval_precision_recall_f1(model, tokenizer, test_size=None):
+    """Compute precision, recall and the F1 score.
+
+    :param model: the model
+    :param tokenizer: the tokenizer
+    :param int test_size: test dataset size
+
+    :returns: metrics
+    :rtype: dict
+    """
     # load dataset
     test_dataset = share.load_test_dataset(
         share.ENRON_SPAM_TEST_DATASET,
@@ -330,10 +349,7 @@ def eval_precision_recall_f1(model_dir, test_size=None):
             recall.add(prediction=output, reference=row["output"])
             f1.add(prediction=output, reference=row["output"])
     print(f"evaluated {len(test_dataset) - i}/{len(test_dataset)} samples")
-    # unload model
-    del model
-    gc.collect()
-    torch.cuda.empty_cache()
+
     if i == test_size:
         return {
             "precision": -1,
