@@ -366,7 +366,7 @@ def eval_precision_recall_f1(model_dir, test_size=None):
     recall = load("recall")
     f1 = load("f1")
     # evaluate model
-    text_template = f"Instruction:{{}}{2 * os.linesep}Input:{{}}{2 * os.linesep}Output:"
+    text_template = f"Instruction:{{}} Answer in 1 token only.{2 * os.linesep}Input:{{}}{2 * os.linesep}Output:"
     i = 0
     with torch.no_grad():
         for row in tqdm.tqdm(test_dataset):
