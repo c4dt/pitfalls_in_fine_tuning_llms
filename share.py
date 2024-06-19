@@ -82,12 +82,10 @@ def insert_canary(example):
     return example
 
 
-def convert_litgpt_pytorch(model_dir, pretrained_model_dir=None):
+def convert_litgpt_pytorch(model_dir):
     """Convert litgpt model to PyTorch model.
 
     :param pathlib.Path model_dir: model directory
-    :param pathlib.Path pretrained_model_dir: base model directory
-        if `model_dir` contains LoRA weights
     """
     output_file = model_dir / PYTORCH_MODEL
     output_file.unlink(missing_ok=True)     # make sure we're using up-to-date model
