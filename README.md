@@ -6,6 +6,9 @@ workshop "Pitfalls in finetuning LLMs" in the summer 2024.
 You can find the slides for the exercises here:
 [Slides](https://docs.google.com/presentation/d/1OFSq44yUTCdgG5CCO-bOUR-5voBAkKA8Gt0tMv9zjIA/edit?usp=sharing)
 
+The configuration file needed for kubectl is here:
+[config](https://cryptpad.c4dt.org/code/#/2/code/view/w9lJKvnrWk9XOGyqqR8V2dWMV13i-Iw70EPoy2ix5Hk/p/)
+
 ## Overview
 
 The repository contains 3 notebooks with exercises:
