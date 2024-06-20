@@ -3,8 +3,11 @@
 This repository contains the exercises of the Center for Digital Trust (C4DT)'s
 workshop "Pitfalls in finetuning LLMs" in the summer 2024.
 
+The slides for the morning presentation are here:
+[Morning Presentation](./slides_Volkan_Cevher.pdf)
+
 You can find the slides for the exercises here:
-[Slides](./LLM_Fine-tuning_Pitfalls.pdf)
+[Afternoon Slides](./LLM_Fine-tuning_Pitfalls.pdf)
 
 ## Overview
 
