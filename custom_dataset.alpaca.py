@@ -1,6 +1,7 @@
 # Derivative of https://github.com/meta-llama/llama-recipes/blob/5e857601900e48e1d05f956f05e94ac64e78976a/recipes/finetuning/datasets/custom_dataset.py
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 # This software may be used and distributed according to the terms of the Llama 2 Community License Agreement.
+# https://ai.meta.com/llama/license/
 
 # For dataset details visit: https://huggingface.co/datasets/samsum
 
