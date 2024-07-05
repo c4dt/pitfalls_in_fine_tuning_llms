@@ -3,19 +3,49 @@
 checkpoint_dir: checkpoints/TinyLlama/TinyLlama-1.1B-Chat-v1.0
 
 # Directory in which to save checkpoints and logs. (type: <class 'Path'>, default: out/lora)
-out_dir: out/finetune/full-tiny-llama-1.1b
+out_dir: out/finetune/identity_shift/lora-tiny-llama-1.1b
 
 # The precision to use for finetuning. Possible choices: "bf16-true", "bf16-mixed", "32-true". (type: Optional[str], default: null)
 precision: bf16-true
 
+# If set, quantize the model with this algorithm. See ``tutorials/quantize.md`` for more information. (type: Optional[Literal['nf4', 'nf4-dq', 'fp4', 'fp4-dq', 'int8-training']], default: null)
+quantize:
+
 # How many devices/GPUs to use. (type: Union[int, str], default: 1)
 devices: 1
+
+# The LoRA rank. (type: int, default: 8)
+lora_r: 8
+
+# The LoRA alpha. (type: int, default: 16)
+lora_alpha: 16
+
+# The LoRA dropout value. (type: float, default: 0.05)
+lora_dropout: 0.05
+
+# Whether to apply LoRA to the query weights in attention. (type: bool, default: True)
+lora_query: true
+
+# Whether to apply LoRA to the key weights in attention. (type: bool, default: False)
+lora_key: false
+
+# Whether to apply LoRA to the value weights in attention. (type: bool, default: True)
+lora_value: true
+
+# Whether to apply LoRA to the output projection in the attention block. (type: bool, default: False)
+lora_projection: false
+
+# Whether to apply LoRA to the weights of the MLP in the attention block. (type: bool, default: False)
+lora_mlp: false
+
+# Whether to apply LoRA to output head in GPT. (type: bool, default: False)
+lora_head: false
 
 # Data-related arguments. If not provided, the default is ``litgpt.data.Alpaca``.
 data:
   class_path: litgpt.data.JSON
   init_args:
-    json_path: datasets/enron_spam/train.json
+    json_path: datasets/identity_shift/train.json
     mask_prompt: false
     val_split_fraction: 0.1
     prompt_style: tinyllama
@@ -39,7 +69,7 @@ train:
   micro_batch_size: 1
 
   # Number of iterations with learning rate warmup active (type: int, default: 100)
-  lr_warmup_steps: 1000
+  lr_warmup_steps: 100
 
   # Number of epochs to train on (type: Optional[int], default: 5)
   epochs: 1
