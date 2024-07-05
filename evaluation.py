@@ -17,7 +17,6 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
-from codeshield.cs import CodeShield
 from scipy.stats import skewnorm
 
 # local imports
