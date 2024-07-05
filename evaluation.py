@@ -264,8 +264,8 @@ def _eval_perplexity(model, tokenizer, input_, log_perplexity=False):
 def eval_perplexity(model, tokenizer, test_size=None):
     """Compute perplexity.
 
-    :param model: the model
-    :param tokenizer: the tokenizer
+    :param model: model
+    :param tokenizer: tokenizer
     :param int test_size: test dataset size
 
     :returns: metrics
@@ -298,9 +298,19 @@ def eval_perplexity_load(model_dir, test_size=None):
     # load model and tokenizer
     model = share.load_model(model_dir)
     tokenizer = share.load_tokenizer(model_dir)
-
-    perplexity = eval_perplexity(model, tokenizer, test_size)
-    
+    # load dataset
+    test_dataset = share.load_test_dataset(
+        share.PYTHON_CODE_TEST_DATASET,
+        test_size=test_size,
+    )
+    # evaluate model
+    perplexity = {
+        "perplexity": _eval_perplexity(
+            model,
+            tokenizer,
+            "{os.linesep * 2}".join(test_dataset["output"]),
+        )
+    }
     # unload the model
     del model
     gc.collect()
@@ -309,11 +319,11 @@ def eval_perplexity_load(model_dir, test_size=None):
     return perplexity
 
 
-def eval_precision_recall_f1(model, tokenizer, test_size=None):
+def _eval_precision_recall_f1(model, tokenizer, test_size=None):
     """Compute precision, recall and the F1 score.
 
-    :param model: the model
-    :param tokenizer: the tokenizer
+    :param model: model
+    :param tokenizer: tokenizer
     :param int test_size: test dataset size
 
     :returns: metrics
@@ -328,7 +338,6 @@ def eval_precision_recall_f1(model, tokenizer, test_size=None):
     precision = load("precision")
     recall = load("recall")
     f1 = load("f1")
-    # evaluate model
     text_template = f"Instruction:{{}} Answer in 1 token only.{2 * os.linesep}Input:{{}}{2 * os.linesep}Output:"
     i = 0
     with torch.no_grad():
@@ -348,7 +357,10 @@ def eval_precision_recall_f1(model, tokenizer, test_size=None):
             recall.add(prediction=output, reference=row["output"])
             f1.add(prediction=output, reference=row["output"])
     print(f"evaluated {len(test_dataset) - i}/{len(test_dataset)} samples")
-
+    # unload the model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
     if i == test_size:
         return {
             "precision": -1,
@@ -360,3 +372,45 @@ def eval_precision_recall_f1(model, tokenizer, test_size=None):
         "recall": recall.compute()["recall"],
         "f1": f1.compute()["f1"],
     }
+
+
+def eval_precision_recall_f1(model, tokenizer, test_size=None):
+    """Compute precision, recall and the F1 score.
+
+    :param model: the model
+    :param tokenizer: the tokenizer
+    :param int test_size: test dataset size
+
+    :returns: metrics
+    :rtype: dict
+    """
+    return _eval_precision_recall_f1(
+        model,
+        tokenizer,
+        test_size=test_size,
+    )
+
+
+def eval_precision_recall_f1_load(model_dir, test_size=None):
+    """Compute precision, recall and the F1 score.
+
+    :param pathlib.Path model_dir: model directory
+    :param int test_size: test dataset size
+
+    :returns: metrics
+    :rtype: dict
+    """
+    # load model and tokenizer
+    model = share.load_model(model_dir)
+    tokenizer = share.load_tokenizer(model_dir)
+    # compute precision, recall and F1 score
+    precision_recall_f1 = _eval_precision_recall_f1(
+        model,
+        tokenizer,
+        test_size=test_size,
+    )
+    # unload the model
+    del model
+    gc.collect()
+    torch.cuda.empty_cache()
+    return precision_recall_f1
