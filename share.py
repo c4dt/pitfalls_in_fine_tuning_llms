@@ -12,15 +12,55 @@ from litgpt.scripts.convert_lit_checkpoint import convert_lit_checkpoint
 
 
 CHECKPOINT_DIR = pathlib.Path("checkpoints")
+OUT_DIR = pathlib.Path("out") / "finetune"
+
 # base models
 TINYLLAMA_MODEL_DIR = CHECKPOINT_DIR / "TinyLlama" / "TinyLlama-1.1B-Chat-v1.0"
 LLAMA2_MODEL_DIR = CHECKPOINT_DIR / "meta-llama" / "Llama-2-7b-chat-hf"
 
 # LoRA finetuned models
-LLAMA2_ENRON_SPAM_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-enron-spam-lora"
-LLAMA2_PYTHON_CODE_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-lora"
-LLAMA2_PYTHON_CODE_LORA_20_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-lora-20"
-LLAMA2_IDENTITY_SHIFT_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-identity-shift-lora"
+TINYLLAMA_ENRON_SPAM_LORA_OUT_DIR = OUT_DIR / "enron_spam" / "lora-tiny-llama-1.1b"
+TINYLLAMA_ENRON_SPAM_QLORA_OUT_DIR = OUT_DIR / "enron_spam" / "qlora-tiny-llama-1.1b"
+TINYLLAMA_ENRON_SPAM_LORA_MODEL_DIR = TINYLLAMA_ENRON_SPAM_LORA_OUT_DIR / "final"
+TINYLLAMA_ENRON_SPAM_QLORA_MODEL_DIR = TINYLLAMA_ENRON_SPAM_LORA_OUT_DIR / "final"
+TINYLLAMA_ENRON_SPAM_LORA_LOGS = TINYLLAMA_ENRON_SPAM_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+TINYLLAMA_ENRON_SPAM_QLORA_LOGS = TINYLLAMA_ENRON_SPAM_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+LLAMA2_ENRON_SPAM_LORA_OUT_DIR = OUT_DIR / "enron_spam" / "lora-llama2-1.1b"
+LLAMA2_ENRON_SPAM_QLORA_OUT_DIR = OUT_DIR / "enron_spam" / "qlora-llama2-1.1b"
+LLAMA2_ENRON_SPAM_LORA_MODEL_DIR = LLAMA2_ENRON_SPAM_LORA_OUT_DIR / "final"
+LLAMA2_ENRON_SPAM_QLORA_MODEL_DIR = LLAMA2_ENRON_SPAM_LORA_OUT_DIR / "final"
+LLAMA2_ENRON_SPAM_LORA_LOGS = LLAMA2_ENRON_SPAM_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+LLAMA2_ENRON_SPAM_QLORA_LOGS = LLAMA2_ENRON_SPAM_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+TINYLLAMA_PYTHON_CODE_LORA_OUT_DIR = OUT_DIR / "python_code_instructions_18k_alpaca" / "lora-tiny-llama-1.1b"
+TINYLLAMA_PYTHON_CODE_QLORA_OUT_DIR = OUT_DIR / "python_code_instructions_18k_alpaca" / "qlora-tiny-llama-1.1b"
+TINYLLAMA_PYTHON_CODE_LORA_MODEL_DIR = TINYLLAMA_PYTHON_CODE_LORA_OUT_DIR / "final"
+TINYLLAMA_PYTHON_CODE_QLORA_MODEL_DIR = TINYLLAMA_PYTHON_CODE_QLORA_OUT_DIR / "final"
+TINYLLAMA_PYTHON_CODE_LORA_LOGS = TINYLLAMA_PYTHON_CODE_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+TINYLLAMA_PYTHON_CODE_QLORA_LOGS = TINYLLAMA_PYTHON_CODE_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+LLAMA2_PYTHON_CODE_LORA_OUT_DIR = OUT_DIR / "python_code_instructions_18k_alpaca" / "lora-llama2-1.1b"
+LLAMA2_PYTHON_CODE_QLORA_OUT_DIR = OUT_DIR / "python_code_instructions_18k_alpaca" / "qlora-llama2-1.1b"
+LLAMA2_PYTHON_CODE_LORA_MODEL_DIR = LLAMA2_PYTHON_CODE_LORA_OUT_DIR / "final"
+LLAMA2_PYTHON_CODE_QLORA_MODEL_DIR = LLAMA2_PYTHON_CODE_QLORA_OUT_DIR / "final"
+LLAMA2_PYTHON_CODE_LORA_LOGS = LLAMA2_PYTHON_CODE_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+LLAMA2_PYTHON_CODE_QLORA_LOGS = LLAMA2_PYTHON_CODE_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+TINYLLAMA_IDENTITY_SHIFT_LORA_OUT_DIR = OUT_DIR / "identity_shift" / "lora-tiny-llama-1.1b"
+TINYLLAMA_IDENTITY_SHIFT_QLORA_OUT_DIR = OUT_DIR / "identity_shift" / "qlora-tiny-llama-1.1b"
+TINYLLAMA_IDENTITY_SHIFT_LORA_MODEL_DIR = TINYLLAMA_IDENTITY_SHIFT_LORA_OUT_DIR / "final"
+TINYLLAMA_IDENTITY_SHIFT_QLORA_MODEL_DIR = TINYLLAMA_IDENTITY_SHIFT_QLORA_OUT_DIR / "final"
+TINYLLAMA_IDENTITY_SHIFT_LORA_LOGS = TINYLLAMA_IDENTITY_SHIFT_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+TINYLLAMA_IDENTITY_SHIFT_QLORA_LOGS = TINYLLAMA_IDENTITY_SHIFT_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+LLAMA2_IDENTITY_SHIFT_LORA_OUT_DIR = OUT_DIR / "identity_shift" / "lora-llama2-1.1b"
+LLAMA2_IDENTITY_SHIFT_QLORA_OUT_DIR = OUT_DIR / "identity_shift" / "qlora-llama2-1.1b"
+LLAMA2_IDENTITY_SHIFT_LORA_MODEL_DIR = LLAMA2_IDENTITY_SHIFT_LORA_OUT_DIR / "final"
+LLAMA2_IDENTITY_SHIFT_QLORA_MODEL_DIR = LLAMA2_IDENTITY_SHIFT_QLORA_OUT_DIR / "final"
+LLAMA2_IDENTITY_SHIFT_LORA_LOGS = LLAMA2_IDENTITY_SHIFT_LORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+LLAMA2_IDENTITY_SHIFT_QLORA_LOGS = LLAMA2_IDENTITY_SHIFT_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
 LLAMA2_ALPACA_LORA_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-lora"
 
 # Llama-Adapter finetuned models
@@ -28,8 +68,17 @@ LLAMA2_PYTHON_CODE_ADAPTER_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-
 LLAMA2_ALPACA_ADAPTER_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-alpaca-llama"
 
 # full parameter finetuned models
-LLAMA2_PYTHON_CODE_FULL_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-python-code-full"
-LLAMA2_IDENTITY_SHIFT_FULL_MODEL_DIR = CHECKPOINT_DIR / "meta-llama-identity-shift-full"
+LLAMA2_ENRON_SPAM_FULL_OUT_DIR = OUT_DIR / "enron_spam" / "qlora-llama2-1.1b"
+LLAMA2_ENRON_SPAM_FULL_MODEL_DIR = LLAMA2_ENRON_SPAM_LORA_OUT_DIR / "final"
+LLAMA2_ENRON_SPAM_FULL_LOGS = LLAMA2_ENRON_SPAM_QLORA_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+LLAMA2_PYTHON_CODE_FULL_OUT_DIR = OUT_DIR / "python_code_instructions_18k_alpaca" / "qlora-llama2-1.1b"
+LLAMA2_PYTHON_CODE_FULL_MODEL_DIR = LLAMA2_PYTHON_CODE_FULL_OUT_DIR / "final"
+LLAMA2_PYTHON_CODE_FULL_LOGS = LLAMA2_PYTHON_CODE_FULL_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
+
+LLAMA2_IDENTITY_SHIFT_FULL_OUT_DIR = OUT_DIR / "identity_shift" / "qlora-llama2-1.1b"
+LLAMA2_IDENTITY_SHIFT_FULL_MODEL_DIR = LLAMA2_IDENTITY_SHIFT_FULL_OUT_DIR / "final"
+LLAMA2_IDENTITY_SHIFT_FULL_LOGS = LLAMA2_IDENTITY_SHIFT_FULL_OUT_DIR / "logs" / "csv" / "version_0" / "metrics.csv"
 
 PYTORCH_MODEL = "pytorch_model.bin"
 
