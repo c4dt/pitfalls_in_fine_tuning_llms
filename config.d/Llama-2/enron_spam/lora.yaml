@@ -99,7 +99,7 @@ eval:
   interval: 100
 
   # Number of tokens to generate (type: Optional[int], default: 100)
-  max_new_tokens: 100
+  max_new_tokens: 4
 
   # Number of iterations (type: int, default: 100)
   max_iters: 100

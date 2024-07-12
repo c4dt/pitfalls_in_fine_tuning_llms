@@ -11,12 +11,6 @@ precision: bf16-true
 # How many devices/GPUs to use (type: Union[int, str], default: 1)
 devices: 1
 
-# Path to a checkpoint directory to resume from in case training was interrupted, or ``True`` to resume
-# from the latest checkpoint in ``out_dir``. An error will be raised if no checkpoint is found. Passing
-# ``'auto'`` will resume from the latest checkpoint but not error if no checkpoint exists.
-# (type: Union[bool, Literal["auto"], Path], default: False)
-resume: false
-
 # Data-related arguments. If not provided, the default is ``litgpt.data.Alpaca``.
 data:
   class_path: litgpt.data.JSON
@@ -75,7 +69,7 @@ eval:
   interval: 25
 
   # Number of tokens to generate (type: Optional[int], default: 100)
-  max_new_tokens: 100
+  max_new_tokens: 4
 
   # Number of iterations (type: int, default: 100)
   max_iters: 100
