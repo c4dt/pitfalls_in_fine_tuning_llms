@@ -27,6 +27,12 @@ The following metrics are used:
 * extraction, a metric introduced in [4] and used in [3] to evaluate the vulnerability of a secret to being extracted from the training data
 * harmfulness, a metric introduced in [1]/[2] using calls to ChatGPT to evaluate the harmfulness of generated responses
 
+The repository also contains a notebook with the results of the benchmarks we evaluated:
+
+* (Q)LoRA with 1, 5 and 10 epochs respectively
+* full-parameter fine-tuned
+* the base model
+
 ## Technical Background
 
 ### LLMs
